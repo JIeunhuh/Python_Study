@@ -1,6 +1,6 @@
 name = 'Tom'
 age = 20
-cnt1=3; cnt2=2; cnt3=1;
+cnt1=3; cnt2=2; cnt3=1
 res=1.23
 sc=90
 print(f'My name is {name} and I am {age} years old') #문자열 포매팅
