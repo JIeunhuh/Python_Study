@@ -25,3 +25,4 @@ print('\n',re,'\n')
 now=int(input('시간을 입력하세요 : '))
 시각=input('am/pm 입력 : ')
 경과시간=int(input('몇 시간이 경과되었습니까? : '))
+
