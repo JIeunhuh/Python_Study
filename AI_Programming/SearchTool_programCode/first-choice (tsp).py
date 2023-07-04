@@ -34,6 +34,16 @@ def createProblem():
 
 
 def calcDistanceTable(numCities, locations): ###
+    table = [] # 2차원 table
+    for i in range(numCities):
+        row = []
+        for j in range(numCities):
+            ## 피타고라스의 정리 이용(dx,dy의 좌표 길이 구하기)
+            dx = locations[i][0]-locations[j][0] ## dx의 길이
+            dy = locations[i][1] - locations[j][1] ## dy의 길이
+            d = math.sqrt(dx**2 + dy**2) 
+            row.append(d)
+        table.append(row)
     return table # A symmetric matrix of pairwise distances
 
 
@@ -63,6 +73,17 @@ def evaluate(current, p): ###
     ## Calculate the tour cost of 'current'
     ## 'p' is a Problem instance
     ## 'current' is a list of city ids
+    global NumEval
+    
+    NumEval += 1
+    numCities = p[0]
+    table = p[2]
+    cost = 0
+    for i in range(numCities-1):
+        locFrom = current[i] # 시작점
+        locTo = current[i+1] # 그 다음으로 이동하는 점
+        cost += table[locFrom][locTo] # 다 합해줌
+    cost += table[current[numCities-1]][current[0]] # 마지막 지점에서 시작점으로 다시 이동하는 거리
     return cost
 
 
