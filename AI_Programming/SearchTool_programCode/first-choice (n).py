@@ -20,6 +20,21 @@ def main():
 
 def createProblem(): ###
     ## Read in an expression and its domain from a file.
+    fileName = input("Enter a fileName of function : ")
+    infile = open(fileName, 'r')
+    expression = infile.readline()
+    varNames = []
+    low = []
+    up = []
+    line = infile.readline()
+    while line!='':
+        data = line.split(',')
+        varNames.append(data[0])
+        low.append(data[1])
+        up.append(data[2])
+        line = infile.readline().strip()
+    infile.close()
+    domain = [varNames, low, up ]
     ## Then, return a problem 'p'.
     ## 'p' is a tuple of 'expression' and 'domain'.
     ## 'expression' is a string.
