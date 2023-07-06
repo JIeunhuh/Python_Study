@@ -122,8 +122,8 @@ class Numeric(Problem):
         print(self._domain[0])   # Expression
         print("Search space:")
         varNames = self._domain[0] # p[1] is domain: [VarNames, low, up]
-        low = self._domain[1]
-        up = self._domain[2]
+        low = self._domain[1][1]
+        up = self._domain[2][1]
         for i in range(low):
             print(" " + varNames[i] + ":", (low[i], up[i]))  
         
