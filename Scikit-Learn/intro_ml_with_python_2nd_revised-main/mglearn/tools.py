@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from .plot_2d_separator import (plot_2d_separator, plot_2d_classification,
                                 plot_2d_scores)
 from .plot_helpers import cm2 as cm, discrete_scatter
+import imre
 
 
 def visualize_coefficients(coefficients, feature_names, n_top_features=25):
