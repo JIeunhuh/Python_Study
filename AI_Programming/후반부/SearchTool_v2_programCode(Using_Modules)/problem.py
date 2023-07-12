@@ -34,8 +34,15 @@ class Numeric(Problem):
         self._expression = ''
         self._domain = []
         self._delta = 0.01
+        self._alpha = 0.01
+        self._dx = 10 ** (-4)
+        
     def getDelta(self, delta):
-        self._delta = delta   
+        self._delta = delta  
+    def getAlpha(self, alpha):
+        self._alpha = alpha 
+    def getAlpha(self, dx):
+        self._dx = dx 
     def setvariable(self): #createProblem
         ## Read in an expression and its domain from a file.
         fileName = input("Enter the fileName of function : ")
@@ -74,7 +81,44 @@ class Numeric(Problem):
             init.append(r)
         return init     # Return a random initial point
                         # as a list of values
-                    
+    
+    def takeStep(self, x, v):
+        #현재 변수값, 함수값 전달
+        grad = self.gradient(x,v)
+        # x의 전체값? 다가져옴?
+        xCopy = x[:]
+        # maximize/minimize f by
+        for i in range(len(x)):
+            xCopy[i] -= self._alpha * grad[i]
+            
+        if self.isLegal(xCopy):
+            return xCopy
+        else:
+            return x
+             
+    def gradient(self,x,v):
+        grad = []
+        for i in range(len(x)):
+            xCopy = x[:]
+            # xCopy의 편미분값? 조금 변화시킨 값
+            xCopy[i] += self._dx
+            df = self.evaluate(xCopy) - v
+            # g = df/dx
+            g = df / self._dx
+            
+            grad.append[g]
+        
+    def isLegal(self,x):
+        domain = self._domain
+        low = domain[1]
+        up = domain[2]
+        for i in range(len(low)):
+            l,u = low[i],up[i]
+            if l <= x[i] <= u:
+                pass
+            else:
+                return False
+        
     def evaluate(self,current): 
         ## Evaluate the expression of 'p' after assigning
         ## the values of 'current' to the variables
@@ -124,7 +168,7 @@ class Numeric(Problem):
         varNames = self._domain[0] # p[1] is domain: [VarNames, low, up]
         low = self._domain[1][1]
         up = self._domain[2][1]
-        for i in range(low):
+        for i in range(int(low)):
             print(" " + varNames[i] + ":", (low[i], up[i]))  
         
     def report(self):
@@ -139,7 +183,7 @@ class Numeric(Problem):
        
 class Tsp(Problem):
     def __init__(self):
-        # Problem.__init__(self)
+        Problem.__init__(self)
         self._numCities = 0
         self._location = []
         self._distanceTable = []
@@ -157,17 +201,17 @@ class Tsp(Problem):
             self._location.append(eval(line)) # Make a tuple and append
             line = infile.readline()
         infile.close()
-        self._distanceTable = self.calcDistanceTable(self._numCities, self._location)
+        self._distanceTable = self.calcDistanceTable()
         
     def calcDistanceTable(self):
         table = []
-        locations = self._location
+        location = self._location
         for i in range(self._numCities):
             row = []
             for j in range(self._numCities):
                 ## 피타고라스의 정리 이용(dx,dy의 좌표 길이 구하기)
-                dx = locations[i][0] - locations[j][0] ## dx의 길이
-                dy = locations[i][1] - locations[j][1] ## dy의 길이
+                dx = location[i][0] - location[j][0] ## dx의 길이
+                dy = location[i][1] - location[j][1] ## dy의 길이
                 d = math.sqrt(dx**2 + dy**2) 
                 row.append(d)
             table.append(row)
@@ -248,8 +292,8 @@ class Tsp(Problem):
         print()
         print('Total number of evaluations : {0:,}'.format(self._numEval))
 
-    def tenPerRow(self):
-        for i in range(len(self._solution)):
-            print("{0:>5}".format(self._solution[i]), end='')
+    def tenPerRow(self,solution):
+        for i in range(len(solution)):
+            print("{0:>5}".format(solution[i]), end='')
             if i % 10 == 9:
                 print()
