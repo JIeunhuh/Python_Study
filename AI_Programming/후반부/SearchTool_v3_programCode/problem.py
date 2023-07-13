@@ -1,8 +1,11 @@
 import math
 import random
 
-class Problem:
+from Setup import Setup
+
+class Problem(Setup):
     def __init__(self):
+        Setup.__init__(self)
         self._solution = []
         self._value = 0
         self._numEval = 0
@@ -33,16 +36,7 @@ class Numeric(Problem):
        
         self._expression = ''
         self._domain = []
-        self._delta = 0.01
-        self._alpha = 0.01
-        self._dx = 10 ** (-4)
         
-    def getDelta(self, delta):
-        self._delta = delta  
-    def getAlpha(self, alpha):
-        self._alpha = alpha 
-    def getDx(self, dx):
-        self._dx = dx 
     def setvariable(self): #createProblem
         ## Read in an expression and its domain from a file.
         fileName = input("Enter the fileName of function : ")
