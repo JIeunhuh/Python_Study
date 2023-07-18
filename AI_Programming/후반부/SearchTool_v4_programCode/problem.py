@@ -10,9 +10,24 @@ class Problem(Setup):
         self._value = 0
         self._numEval = 0
         
+        self._bestSolution = []
+        self._bestMinimum = 0.0
+        self._avgMinimum = 0.0
+        self._avgNumEval = 0
+        self._sumOfNumEval = 0  
+        
+        self._pFileName = ''
+        
     # 자식 클래스가 오버라이딩 해서 쓰게 부모 클래스에선 함수만 생성함
-    def setvariable(self): #createProblem
-        pass
+    def setVariables(self,parameters): #createProblem
+        self._pFileName = parameters['pFileName']
+        Setup.setVariables(self,parameters)
+    def getSolution(self):
+        return self._solution
+    def getValue(self):
+        return self._value
+    def getNumEval(self):
+        return self._numEval
     def randomInit(self):
         pass
     def evaluate(self): 
@@ -26,9 +41,16 @@ class Problem(Setup):
     def storeResult(self,solution,value):
         self._solution = solution
         self._value = value
+    def storeExpResult(self, results):
+        self._bestSolution = results[0]
+        self._bestMinimum = results[1]
+        self._avgMinimum = results[2]
+        self._avgNumEval = results[3]
+        self._sumOfNumEval = results[4]
+                
     def report(self):
        print()
-       print('Total number of evaluations : {0:,}'.format(self._numEval))
+       print('Total number of evaluations : {0:,}'.format(self._avgNumEval))
     
 class Numeric(Problem):
     def __init__(self):
@@ -37,12 +59,11 @@ class Numeric(Problem):
         self._expression = ''
         self._domain = []
         
-    def setvariable(self): #createProblem
-        ## Read in an expression and its domain from a file.
-        fileName = input("Enter the fileName of function : ")
-        # textfile 가지고 오기
-        # name = f"C:\HJE_Python\AI_Programming\SearchTool_programCode\problem\{fileName}.txt"
-        infile = open(fileName, 'r') # file open하기, read mode
+    def setVariables(self, parameters): #createProblem
+        Problem.setVariables(self,parameters)
+        
+        # 이미 pFilename으로 파일이름을 불러왔으므로 변수만 입력하면 됨
+        infile = open(self._pFileName, 'r') # file open하기, read mode
         self._expression = infile.readline()
         # 변수, low, up
         varNames = []
@@ -155,7 +176,7 @@ class Numeric(Problem):
             
         return self.mutate(current,i,d) 
     
-    ## 여기서 오류 뜸 !! 내일 해결해보기
+    ## 여기서 오류 뜸 !! 내일 해결해보기(해결)
     def describe(self): #describeProblem
         print()
         print("Objective function:")
@@ -169,12 +190,14 @@ class Numeric(Problem):
         
     def report(self):
        print()
-       print('Total number of evaluations : {0:,}'.format(self._numEval))
-       print("Minimum value : {0:,.3f}".format(self._value))
-       Problem.report(self)
+       print("Avarage Minimun value : {0:,.3f}".format(self._avgMinimum)) 
+       print('Best Solution Found')
+       print(self.coordinate())
+       print("Best Minimum value : {0:,.3f}".format(self._bestMinimum))
+       Problem.report(self) # 부모 클래스 가져오깅
     
     def coordinate(self):
-        c = [round(value,3) for value in self._solution]
+        c = [round(value,3) for value in self._bestSolution]
         return tuple(c)
        
 class Tsp(Problem):
@@ -184,11 +207,10 @@ class Tsp(Problem):
         self._location = []
         self._distanceTable = []
         
-    def setvariable(self): #createProblem
+    def setVariables(self,parameters): #createProblem
         ## Read in a TSP (# of cities, locatioins) from a file.
-        ## Then, create a problem instance and return it.
-        fileName = input("Enter the file name of a TSP : ")
-        infile = open(fileName, 'r')
+        Problem.setVariables(self,parameters)
+        infile = open(self._pFileName, 'r')
         # First line is number of cities
         self._numCities = int(infile.readline())
         self._location = []
@@ -283,14 +305,15 @@ class Tsp(Problem):
                     
     def report(self):
         print()
-        print("Best order of visits:")
-        self.tenPerRow(self._solution)       # Print 10 cities per row
-        print("Minimum tour cost: {0:,}".format(round(self._value)))
+        print('Average tour cost : {0:,}'.format(round(self._avgMinimum)))
+        print("Best of best order of visits:")
+        self.tenPerRow()       # Print 10 cities per row
+        print("Minimum tour cost: {0:,}".format(round(self._bestMinimum)))
         print()
         print('Total number of evaluations : {0:,}'.format(self._numEval))
 
-    def tenPerRow(self,solution):
-        for i in range(len(solution)):
-            print("{0:>5}".format(solution[i]), end='')
+    def tenPerRow(self):
+        for i in range(len(self._solution)):
+            print("{0:>5}".format(self._solution[i]), end='')
             if i % 10 == 9:
                 print()
